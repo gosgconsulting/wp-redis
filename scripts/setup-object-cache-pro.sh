@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Object Cache Pro Auto-Setup Script
-# This script automatically downloads, installs, and activates Object Cache Pro
+# Object Cache Pro Auto-Activation Script
+# This script automatically activates a manually uploaded Object Cache Pro plugin
 # Works for both new installations and existing WordPress sites
 
 set -e
 
-echo "🚀 Starting Object Cache Pro auto-setup..."
+echo "🚀 Starting Object Cache Pro auto-activation..."
 
 # Configuration
 PLUGINS_DIR="/var/www/html/wp-content/plugins"
 OCP_DIR="${PLUGINS_DIR}/object-cache-pro"
 DROPIN_SOURCE="${OCP_DIR}/stubs/object-cache.php"
 DROPIN_TARGET="/var/www/html/wp-content/object-cache.php"
-DOWNLOAD_URL="https://objectcache.pro/releases/object-cache-pro.zip"
+OCP_MAIN_FILE="${OCP_DIR}/object-cache-pro.php"
 
 # Wait for WordPress to be ready
 echo "⏳ Waiting for WordPress database to be ready..."
@@ -23,47 +23,24 @@ until wp db check --allow-root --quiet 2>/dev/null; do
 done
 echo "✅ WordPress database is ready!"
 
-# Function to download and install Object Cache Pro
-install_object_cache_pro() {
-    echo "📦 Installing Object Cache Pro..."
+# Function to check if Object Cache Pro is available
+check_object_cache_pro() {
+    echo "🔍 Checking for Object Cache Pro plugin..."
     
-    # Create plugins directory if it doesn't exist
-    mkdir -p "$PLUGINS_DIR"
-    
-    # Remove existing installation if present
-    if [ -d "$OCP_DIR" ]; then
-        echo "🗑️ Removing existing Object Cache Pro installation..."
-        rm -rf "$OCP_DIR"
-    fi
-    
-    # Download Object Cache Pro using license token
-    if [ -n "$WP_REDIS_LICENSE_TOKEN" ]; then
-        echo "🔑 Downloading Object Cache Pro with license token..."
-        
-        # Create temporary directory
-        TEMP_DIR=$(mktemp -d)
-        cd "$TEMP_DIR"
-        
-        # Download with authorization header
-        curl -L -H "Authorization: Bearer $WP_REDIS_LICENSE_TOKEN" \
-             -o object-cache-pro.zip \
-             "$DOWNLOAD_URL" || {
-            echo "❌ Failed to download Object Cache Pro. Check your license token."
-            rm -rf "$TEMP_DIR"
-            return 1
-        }
-        
-        # Extract to plugins directory
-        unzip -q object-cache-pro.zip -d "$PLUGINS_DIR/"
-        
-        # Clean up
-        rm -rf "$TEMP_DIR"
-        
-        echo "✅ Object Cache Pro downloaded and extracted successfully!"
-    else
-        echo "❌ WP_REDIS_LICENSE_TOKEN environment variable not set!"
+    if [ ! -d "$OCP_DIR" ]; then
+        echo "❌ Object Cache Pro plugin directory not found: $OCP_DIR"
+        echo "ℹ️ Please upload Object Cache Pro plugin files to wp-content/plugins/object-cache-pro/"
         return 1
     fi
+    
+    if [ ! -f "$OCP_MAIN_FILE" ]; then
+        echo "❌ Object Cache Pro main plugin file not found: $OCP_MAIN_FILE"
+        echo "ℹ️ Please ensure object-cache-pro.php is in the plugin directory"
+        return 1
+    fi
+    
+    echo "✅ Object Cache Pro plugin files found!"
+    return 0
 }
 
 # Function to activate the plugin
@@ -134,12 +111,16 @@ verify_installation() {
 
 # Main execution
 main() {
-    echo "🎯 Starting Object Cache Pro auto-setup for $(wp option get siteurl --allow-root 2>/dev/null || echo 'WordPress site')..."
+    echo "🎯 Starting Object Cache Pro auto-activation for $(wp option get siteurl --allow-root 2>/dev/null || echo 'WordPress site')..."
     
-    # Install Object Cache Pro
-    install_object_cache_pro || {
-        echo "❌ Failed to install Object Cache Pro"
-        exit 1
+    # Check if Object Cache Pro is available
+    check_object_cache_pro || {
+        echo "ℹ️ Object Cache Pro not available, skipping activation"
+        echo "📝 To enable Object Cache Pro:"
+        echo "   1. Download plugin from https://objectcache.pro/"
+        echo "   2. Upload files to wp-content/plugins/object-cache-pro/"
+        echo "   3. Redeploy container"
+        return 0
     }
     
     # Activate the plugin
@@ -157,7 +138,7 @@ main() {
     # Verify everything is working
     verify_installation
     
-    echo "🎉 Object Cache Pro auto-setup completed successfully!"
+    echo "🎉 Object Cache Pro auto-activation completed successfully!"
     echo "🔗 Visit Settings > Object Cache Pro in WordPress Admin to verify status"
 }
 

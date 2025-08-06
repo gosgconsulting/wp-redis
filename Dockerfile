@@ -21,6 +21,10 @@ COPY wp-app/filemanager.php /var/www/html/
 # Copy the custom wp-config.php file
 COPY wp-config-docker.php /var/www/html/wp-config.php
 
+# Copy custom PHP config to override defaults
+COPY config/php.conf.ini /usr/local/etc/php/conf.d/uploads.ini
+
+
 # Re-apply WordPress permissions. This is a build-time step.
 # The fix-permissions.sh script will handle runtime permissions.
 RUN chown -R www-data:www-data /var/www/html

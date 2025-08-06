@@ -13,9 +13,14 @@ services:
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+      WORDPRESS_DB_USER: "${DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD}"
       WORDPRESS_TABLE_PREFIX: "${WORDPRESS_TABLE_PREFIX}"
+      WORDPRESS_URL: "${WORDPRESS_URL}"
+      WORDPRESS_TITLE: "${WORDPRESS_TITLE}"
+      WORDPRESS_ADMIN_USER: "${WORDPRESS_ADMIN_USER}"
+      WORDPRESS_ADMIN_PASSWORD: "${WORDPRESS_ADMIN_PASSWORD}"
+      WORDPRESS_ADMIN_EMAIL: "${WORDPRESS_ADMIN_EMAIL}"
     depends_on:
       - db
     links:
@@ -30,8 +35,8 @@ services:
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+      WORDPRESS_DB_USER: "${DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD}"
       WORDPRESS_TABLE_PREFIX: "${WORDPRESS_TABLE_PREFIX}"
     depends_on:
       - db
@@ -62,6 +67,8 @@ services:
       - db_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
       MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
     restart: always
 

@@ -18,6 +18,9 @@ RUN chmod +x /docker-entrypoint-initwp.d/setup-db.sh
 COPY setup-redis.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/setup-redis.sh
 
+COPY setup-wordpress.sh /docker-entrypoint-initwp.d/
+RUN chmod +x /docker-entrypoint-initwp.d/setup-wordpress.sh
+
 # Copy wp-content
 # COPY ./wp-content /var/www/html/wp-content/
 

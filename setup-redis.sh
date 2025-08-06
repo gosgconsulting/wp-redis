@@ -22,16 +22,23 @@ if [ -n "$WORDPRESS_REDIS_ENABLED" ] && [ "$WORDPRESS_REDIS_ENABLED" = "true" ];
         # Use a random salt for Redis
         WORDPRESS_REDIS_SALT=$(openssl rand -base64 32)
 
+        # Get the Redis host from the environment variables
+        WORDPRESS_REDIS_HOST=$(getenv 'WORDPRESS_REDIS_HOST')
+        WORDPRESS_REDIS_PORT=$(getenv 'WORDPRESS_REDIS_PORT')
+        WORDPRESS_REDIS_DATABASE=$(getenv 'WORDPRESS_REDIS_DATABASE')
+        WORDPRESS_REDIS_PASSWORD=$(getenv 'WORDPRESS_REDIS_PASSWORD')
+        WORDPRESS_REDIS_PREFIX=$(getenv 'WORDPRESS_REDIS_PREFIX')
+
         # Use 'cat' to append the Redis configuration block to wp-config.php
         cat <<'EOF' >> /var/www/html/wp-config.php
 
 // Added by setup-redis.sh for Redis object cache
 define( 'WP_REDIS_CONFIG', [
     'token'             => '$WORDPRESS_REDIS_SALT',
-    'host'              => 'redis',
-    'port'              => 6379,
-    'database'          => getenv('WORDPRESS_REDIS_DATABASE') ?: 0,
-    'password'          => getenv('WORDPRESS_REDIS_PASSWORD') ?: null,
+    'host'              => '$WORDPRESS_REDIS_HOST',
+    'port'              => '$WORDPRESS_REDIS_PORT',
+    'database'          => '$WORDPRESS_REDIS_DATABASE',
+    'password'          => '$WORDPRESS_REDIS_PASSWORD',
     'timeout'           => 1,
     'read_timeout'      => 1,
     'retry_interval'    => 3,

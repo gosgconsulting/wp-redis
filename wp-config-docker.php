@@ -157,12 +157,12 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
         
         // Advanced features (Pro only) - High Performance Configuration
         'backoff' => 'smart',
-        'compression' => 'zstd',        // ✅ Installed: zstd extension
-        'serializer' => 'igbinary',     // ✅ Installed: igbinary extension
+        'compression' => 'lz4',           // ✅ Changed from 'zstd' to 'lz4' for better compatibility
+        'serializer' => 'igbinary',       // ✅ Installed: igbinary extension
         'async_flush' => true,
         'split_alloptions' => true,
         'prefetch' => true,
-        'shared' => true,               // 🆕 Added from your config
+        'shared' => true,
         'strict' => true,
         
         // Debugging

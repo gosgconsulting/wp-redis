@@ -5,7 +5,10 @@ RUN apt-get update && apt-get install -y \
     sudo \
     libpng-dev \
     openssl \
+    curl \
     libzstd-dev \
+    libzstd1-dev \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
@@ -14,11 +17,14 @@ RUN a2enmod rewrite
 # Copy custom Apache config to enable .htaccess overrides
 COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 
+# Install performance extensions first (igbinary and zstd)
+RUN pecl install -o -f igbinary zstd \
+    && docker-php-ext-enable igbinary zstd
 
-# Install Redis and performance extensions for Object Cache Pro
-RUN pecl install -o -f redis igbinary zstd \
-    &&  rm -rf /tmp/pear \
-    &&  docker-php-ext-enable redis igbinary zstd
+# Install Redis with zstd compression support
+# Configure Redis to use zstd compression during compilation
+RUN pecl install -o -f redis \
+    && docker-php-ext-enable redis
 
 # Copy custom scripts to be run by the official entrypoint
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/
@@ -34,7 +40,6 @@ COPY wp-config-docker.php /var/www/html/wp-config.php
 
 # Copy custom PHP config to override defaults
 COPY config/php.conf.ini /usr/local/etc/php/conf.d/uploads.ini
-
 
 # Re-apply WordPress permissions. This is a build-time step.
 # The fix-permissions.sh script will handle runtime permissions.

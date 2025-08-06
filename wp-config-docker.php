@@ -130,38 +130,16 @@ if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 
 // Redis configuration
 if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
-    define('WP_REDIS_CONFIG', [
-        'token'             => getenv_docker('WORDPRESS_REDIS_SALT', 'salt'),
-        'host'              => getenv_docker('WORDPRESS_REDIS_HOST', 'redis'),
-        'port'              => getenv_docker('WORDPRESS_REDIS_PORT', 6379),
-        'database'          => getenv_docker('WORDPRESS_REDIS_DATABASE', 0),
-        'password'          => getenv_docker('WORDPRESS_REDIS_PASSWORD', null),
-        'timeout'           => 1,
-        'read_timeout'      => 1,
-        'retry_interval'    => 3,
-        'retries'           => 3,
-        'backoff'           => 'decorrelated_jitter',
-        'serializer'        => 'php',
-        'compression'       => 'zstd',
-        'async_flush'       => true,
-        'split_alloptions'  => true,
-        'client'            => 'pecl',
-        'prefix'            => getenv_docker('WORDPRESS_REDIS_PREFIX', 'wp_'),
-        'maxttl'            => 86400 * 7, // 7 days
-        'debug'             => false,
-        'save_commands'     => false,
-    ]);
-
+    define('WP_REDIS_CLIENT', 'pecl');
+    define('WP_REDIS_HOST', getenv_docker('WORDPRESS_REDIS_HOST', 'redis'));
+    define('WP_REDIS_PORT', getenv_docker('WORDPRESS_REDIS_PORT', 6379));
+    define('WP_REDIS_DATABASE', getenv_docker('WORDPRESS_REDIS_DATABASE', 0));
+    define('WP_REDIS_PASSWORD', getenv_docker('WORDPRESS_REDIS_PASSWORD', null));
+    define('WP_REDIS_PREFIX', getenv_docker('WORDPRESS_REDIS_PREFIX', 'wp_'));
+    define('WP_REDIS_MAXTTL', 86400 * 7);
+    define('WP_REDIS_TIMEOUT', 1);
+    define('WP_REDIS_READ_TIMEOUT', 1);
     define('WP_REDIS_DISABLED', false);
-
-    // Enable the Redis object cache drop-in
-    // $wp_content_dir = defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR : __DIR__ . '/wp-content';
-    // $object_cache_source = $wp_content_dir . '/plugins/redis-cache/includes/drop-ins/object-cache.php';
-    // $object_cache_dest = $wp_content_dir . '/object-cache.php';
-
-    // if (file_exists($object_cache_source) && !file_exists($object_cache_dest)) {
-    //     copy($object_cache_source, $object_cache_dest);
-    // }
 }
 
 /* That's all, stop editing! Happy publishing. */

@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     openssl \
     curl \
+    unzip \
     liblz4-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,9 +27,16 @@ RUN pecl install -o -f --configureoptions 'enable-redis-igbinary="yes" enable-re
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 
+# Install WP-CLI for WordPress management
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
+
 # Copy custom scripts to be run by the official entrypoint
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/
-RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh
+COPY scripts/setup-object-cache-pro.sh /docker-entrypoint-initwp.d/
+RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh \
+    && chmod +x /docker-entrypoint-initwp.d/setup-object-cache-pro.sh
 
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/

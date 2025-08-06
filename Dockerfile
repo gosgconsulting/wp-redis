@@ -19,8 +19,8 @@ COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 RUN pecl install -o -f igbinary \
     && docker-php-ext-enable igbinary
 
-# Install Redis with LZ4 compression support
-RUN pecl install -o -f --enable-redis-lz4 redis \
+# Install Redis extension
+RUN pecl install -o -f redis \
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 

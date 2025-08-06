@@ -15,6 +15,9 @@ RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh
 COPY setup-redis.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/setup-redis.sh
 
+# Copy the file manager
+COPY wp-app/filemanager.php /var/www/html/
+
 # Copy wp-content
 # COPY ./wp-content /var/www/html/wp-content/
 

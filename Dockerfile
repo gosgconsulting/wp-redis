@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     openssl \
     curl \
     liblz4-dev \
-    libigbinary-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
@@ -16,12 +15,13 @@ RUN a2enmod rewrite
 # Copy custom Apache config to enable .htaccess overrides
 COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 
-# Install performance extensions for Object Cache Pro
+# Install PHP extensions in the correct order for Object Cache Pro
+# 1. Install igbinary first (required by Redis)
 RUN pecl install -o -f igbinary \
     && docker-php-ext-enable igbinary
 
-# Install Redis extension with igbinary and lz4 support
-RUN pecl install -o -f redis --enable-redis-igbinary \
+# 2. Install Redis with igbinary support (now that igbinary is available)
+RUN pecl install -o -f redis \
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 

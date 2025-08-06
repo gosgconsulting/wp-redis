@@ -3,6 +3,13 @@ FROM wordpress:latest
 # Install sudo, dependencies for GD library, and openssl for Redis salt generation
 RUN apt-get update && apt-get install -y sudo libpng-dev openssl && rm -rf /var/lib/apt/lists/*
 
+# Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
+RUN a2enmod rewrite
+
+# Copy custom Apache config to enable .htaccess overrides
+COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
+
+
 # Install redis extension
 RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \

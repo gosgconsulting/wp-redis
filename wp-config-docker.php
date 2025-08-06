@@ -133,7 +133,7 @@ if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 	eval($configExtra);
 }
 
-// ==> Redis Configuration for Both Free and Pro Plugins <==
+// ==> Object Cache Pro Configuration (Premium Redis Plugin) <==
 if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
     
     // ==> Object Cache Pro Configuration (Premium) <==
@@ -179,18 +179,7 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
     // Global Redis disable switch (your preferred syntax)
     define('WP_REDIS_DISABLED', getenv_docker('WP_REDIS_DISABLED', false));
     
-    // ==> Free Redis Cache Plugin Configuration (Fallback) <==
-    // These constants are used by the free "Redis Cache" plugin
-    // They work alongside the Object Cache Pro config above
-    define('WP_REDIS_CLIENT', 'pecl');
-    define('WP_REDIS_HOST', getenv_docker('WORDPRESS_REDIS_HOST', 'redis'));
-    define('WP_REDIS_PORT', getenv_docker('WORDPRESS_REDIS_PORT', 6379));
-    define('WP_REDIS_DATABASE', getenv_docker('WORDPRESS_REDIS_DATABASE', 0));
-    define('WP_REDIS_PASSWORD', getenv_docker('WORDPRESS_REDIS_PASSWORD', null));
-    define('WP_REDIS_PREFIX', getenv_docker('WORDPRESS_REDIS_PREFIX', 'wp_'));
-    define('WP_REDIS_MAXTTL', 86400 * 7);
-    define('WP_REDIS_TIMEOUT', 1);
-    define('WP_REDIS_READ_TIMEOUT', 1);
+
 }
 
 /* That's all, stop editing! Happy publishing. */

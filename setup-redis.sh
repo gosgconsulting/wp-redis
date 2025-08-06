@@ -56,6 +56,23 @@ EOF
     else
         echo "Redis configuration already exists or wp-config.php not found."
     fi
+
+    # Enable the Redis object cache drop-in
+    WP_CONTENT_DIR="/var/www/html/wp-content"
+    OBJECT_CACHE_SOURCE="${WP_CONTENT_DIR}/plugins/redis-cache/includes/drop-ins/object-cache.php"
+    OBJECT_CACHE_DEST="${WP_CONTENT_DIR}/object-cache.php"
+
+    if [ -f "$OBJECT_CACHE_SOURCE" ]; then
+        if [ ! -f "$OBJECT_CACHE_DEST" ]; then
+            echo "Enabling Redis object cache drop-in..."
+            cp "$OBJECT_CACHE_SOURCE" "$OBJECT_CACHE_DEST"
+            echo "Redis object cache drop-in enabled."
+        else
+            echo "Redis object cache drop-in already exists."
+        fi
+    else
+        echo "WARNING: Redis object cache drop-in not found at $OBJECT_CACHE_SOURCE"
+    fi
 else
     echo "Redis is not enabled. Skipping configuration."
 fi

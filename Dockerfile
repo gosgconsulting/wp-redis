@@ -12,9 +12,6 @@ RUN pecl install -o -f redis \
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh
 
-COPY setup-redis.sh /docker-entrypoint-initwp.d/
-RUN chmod +x /docker-entrypoint-initwp.d/setup-redis.sh
-
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/
 

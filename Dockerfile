@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     openssl \
     curl \
     liblz4-dev \
+    libigbinary-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
@@ -19,8 +20,8 @@ COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 RUN pecl install -o -f igbinary \
     && docker-php-ext-enable igbinary
 
-# Install Redis extension
-RUN pecl install -o -f redis \
+# Install Redis extension with igbinary and lz4 support
+RUN pecl install -o -f redis --enable-redis-igbinary \
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 

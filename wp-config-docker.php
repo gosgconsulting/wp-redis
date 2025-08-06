@@ -133,8 +133,49 @@ if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 	eval($configExtra);
 }
 
-// Redis configuration
+// ==> Redis Configuration for Both Free and Pro Plugins <==
 if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
+    
+    // ==> Object Cache Pro Configuration (Premium) <==
+    // This takes priority if Object Cache Pro is installed
+    define('WP_REDIS_CONFIG', [
+        // License token - hardcoded for convenience (you can also use environment variable)
+        'token' => 'e279430effe043b8c17d3f3c751c4c0846bc70c97f0eaaea766b4079001c',
+        
+        // Connection settings (Docker-optimized)
+        'host' => getenv_docker('WORDPRESS_REDIS_HOST', 'redis'), // Use service name, not 127.0.0.1
+        'port' => getenv_docker('WORDPRESS_REDIS_PORT', 6379),
+        'database' => getenv_docker('WORDPRESS_REDIS_DATABASE', 1), // Default to database 1
+        'password' => getenv_docker('WORDPRESS_REDIS_PASSWORD', null),
+        
+        // Performance settings
+        'timeout' => 0.5,
+        'read_timeout' => 0.5,
+        'retry_interval' => 10,
+        'retries' => 3,
+        'maxttl' => 3600 * 24, // 24 hours (your preference)
+        
+        // Advanced features (Pro only) - High Performance Configuration
+        'backoff' => 'smart',
+        'compression' => 'zstd',        // ✅ Installed: zstd extension
+        'serializer' => 'igbinary',     // ✅ Installed: igbinary extension
+        'async_flush' => true,
+        'split_alloptions' => true,
+        'prefetch' => true,
+        'shared' => true,               // 🆕 Added from your config
+        'strict' => true,
+        
+        // Debugging
+        'debug' => false,
+        'save_commands' => false,
+    ]);
+    
+    // Global Redis disable switch (your preferred syntax)
+    define('WP_REDIS_DISABLED', getenv_docker('WP_REDIS_DISABLED', false));
+    
+    // ==> Free Redis Cache Plugin Configuration (Fallback) <==
+    // These constants are used by the free "Redis Cache" plugin
+    // They work alongside the Object Cache Pro config above
     define('WP_REDIS_CLIENT', 'pecl');
     define('WP_REDIS_HOST', getenv_docker('WORDPRESS_REDIS_HOST', 'redis'));
     define('WP_REDIS_PORT', getenv_docker('WORDPRESS_REDIS_PORT', 6379));
@@ -144,7 +185,6 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
     define('WP_REDIS_MAXTTL', 86400 * 7);
     define('WP_REDIS_TIMEOUT', 1);
     define('WP_REDIS_READ_TIMEOUT', 1);
-    define('WP_REDIS_DISABLED', false);
 }
 
 /* That's all, stop editing! Happy publishing. */

@@ -1,14 +1,11 @@
 FROM wordpress:latest
 
-# Install system dependencies for Redis, compression, and WordPress
+# Install system dependencies for Redis and WordPress
 RUN apt-get update && apt-get install -y \
     sudo \
     libpng-dev \
     openssl \
     curl \
-    libzstd-dev \
-    libzstd1-dev \
-    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
@@ -17,14 +14,10 @@ RUN a2enmod rewrite
 # Copy custom Apache config to enable .htaccess overrides
 COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 
-# Install performance extensions first (igbinary and zstd)
-RUN pecl install -o -f igbinary zstd \
-    && docker-php-ext-enable igbinary zstd
-
-# Install Redis with zstd compression support
-# Configure Redis to use zstd compression during compilation
-RUN pecl install -o -f redis \
-    && docker-php-ext-enable redis
+# Install Redis and performance extensions for Object Cache Pro
+RUN pecl install -o -f redis igbinary \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis igbinary
 
 # Copy custom scripts to be run by the official entrypoint
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/

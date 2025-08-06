@@ -20,8 +20,8 @@ COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 RUN pecl install -o -f igbinary \
     && docker-php-ext-enable igbinary
 
-# 2. Install Redis with igbinary support (now that igbinary is available)
-RUN pecl install -o -f redis \
+# 2. Install Redis with explicit igbinary support
+RUN printf "\n\n\n\nyes\nyes\n\n\n\n\n" | pecl install redis \
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 

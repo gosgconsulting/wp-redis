@@ -21,6 +21,12 @@ COPY wp-app/filemanager.php /var/www/html/
 # Copy wp-content
 # COPY ./wp-content /var/www/html/wp-content/
 
+# Remove the original wp-config-docker.php file
+RUN rm -rf /var/www/html/wp-config-docker.php
+
+# Copy the wp-config-docker.php file
+COPY wp-config-docker.php /var/www/html/wp-config-docker.php
+
 # Re-apply WordPress permissions. This is a build-time step.
 # The fix-permissions.sh script will handle runtime permissions.
 RUN chown -R www-data:www-data /var/www/html

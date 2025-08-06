@@ -6,4 +6,4 @@ set -e
 chown -R www-data:www-data /var/www/html/wp-content
 
 # Execute the original WordPress entrypoint
-exec "docker-entrypoint.sh" "$@"
+exec "/usr/local/bin/docker-entrypoint.sh" "$@"

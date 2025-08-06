@@ -1,16 +1,19 @@
 FROM wordpress:latest
 
 # Install sudo and dependencies for GD library
-RUN apt-get update && apt-get install -y sudo libpng-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y sudo libpng-dev openssl && rm -rf /var/lib/apt/lists/*
 
 # Install redis extension
 RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis
 
-# Copy custom entrypoint script
+# Copy custom entrypoint script and Redis setup script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+COPY setup-redis.sh /docker-entrypoint-initwp.d/
+RUN chmod +x /docker-entrypoint-initwp.d/setup-redis.sh
 
 # Set the entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]

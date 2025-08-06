@@ -19,7 +19,7 @@ COPY setup-redis.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/setup-redis.sh
 
 # Copy wp-content
-COPY ./wp-content /var/www/html/wp-content/
+# COPY ./wp-content /var/www/html/wp-content/
 
 # Re-apply WordPress permissions. This is a build-time step.
 # The fix-permissions.sh script will handle runtime permissions.

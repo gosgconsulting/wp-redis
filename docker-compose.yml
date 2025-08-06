@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wp:
-    image: fazalfarhan01/wordpress-redis
+    build: .
     ports:
       - ${WORDPRESS_PORT}:80
     volumes:

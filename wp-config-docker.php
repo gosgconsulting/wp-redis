@@ -139,8 +139,8 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
     // ==> Object Cache Pro Configuration (Premium) <==
     // This takes priority if Object Cache Pro is installed
     define('WP_REDIS_CONFIG', [
-        // License token - hardcoded for convenience (you can also use environment variable)
-        'token' => 'e279430effe043b8c17d3f3c751c4c0846bc70c97f0eaaea766b4079001c',
+        // License token - loaded from environment variable for security
+        'token' => getenv_docker('WP_REDIS_LICENSE_TOKEN', null),
         
         // Connection settings (Docker-optimized)
         'host' => getenv_docker('WORDPRESS_REDIS_HOST', 'redis'), // Use service name, not 127.0.0.1

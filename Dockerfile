@@ -27,8 +27,7 @@ RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/
 
-# Copy wp-content (plugins, themes, uploads)
-COPY wp-content/ /var/www/html/wp-content/
+# wp-content will be managed manually through WordPress admin
 
 # Copy the custom wp-config.php file
 COPY wp-config-docker.php /var/www/html/wp-config.php

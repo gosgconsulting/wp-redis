@@ -138,6 +138,12 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
     
     // ==> Object Cache Pro Configuration (Premium) <==
     // This takes priority if Object Cache Pro is installed
+    // 
+    // IMPORTANT: To activate Object Cache Pro:
+    // 1. Install the plugin via WordPress Admin
+    // 2. Go to Settings > Object Cache Pro 
+    // 3. Click "Enable Object Cache" to install the drop-in
+    // 4. Verify "Status: Connected" appears
     define('WP_REDIS_CONFIG', [
         // License token - loaded from environment variable for security
         'token' => getenv_docker('WP_REDIS_LICENSE_TOKEN', null),
@@ -157,7 +163,7 @@ if (getenv_docker('WORDPRESS_REDIS_ENABLED', false)) {
         
         // Advanced features (Pro only) - High Performance Configuration
         'backoff' => 'smart',
-        'compression' => 'lz4',           // ✅ Changed from 'zstd' to 'lz4' for better compatibility
+        'compression' => 'none',         // ✅ Disabled compression for maximum compatibility
         'serializer' => 'igbinary',       // ✅ Installed: igbinary extension
         'async_flush' => true,
         'split_alloptions' => true,

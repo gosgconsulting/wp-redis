@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     openssl \
     curl \
+    liblz4-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
@@ -14,10 +15,14 @@ RUN a2enmod rewrite
 # Copy custom Apache config to enable .htaccess overrides
 COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
 
-# Install Redis and performance extensions for Object Cache Pro
-RUN pecl install -o -f redis igbinary \
-    &&  rm -rf /tmp/pear \
-    &&  docker-php-ext-enable redis igbinary
+# Install performance extensions for Object Cache Pro
+RUN pecl install -o -f igbinary \
+    && docker-php-ext-enable igbinary
+
+# Install Redis with LZ4 compression support
+RUN pecl install -o -f --enable-redis-lz4 redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/pear
 
 # Copy custom scripts to be run by the official entrypoint
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/

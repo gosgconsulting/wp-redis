@@ -29,8 +29,24 @@ check_object_cache_pro() {
     
     if [ ! -d "$OCP_DIR" ]; then
         echo "❌ Object Cache Pro plugin directory not found: $OCP_DIR"
-        echo "ℹ️ Please upload Object Cache Pro plugin files to wp-content/plugins/object-cache-pro/"
-        return 1
+        echo "ℹ️ Attempting to install from local plugins folder..."
+        
+        # Try to run the copy script if it exists
+        if [ -f "/docker-entrypoint-initwp.d/copy-object-cache-pro.sh" ]; then
+            echo "📦 Running copy script..."
+            bash /docker-entrypoint-initwp.d/copy-object-cache-pro.sh
+            
+            # Check if installation was successful
+            if [ ! -d "$OCP_DIR" ] || [ ! -f "$OCP_MAIN_FILE" ]; then
+                echo "❌ Local installation failed"
+                echo "ℹ️ Please ensure Object Cache Pro plugin files are in the plugins/object-cache-pro/ directory"
+                return 1
+            fi
+        else
+            echo "❌ Copy script not found"
+            echo "ℹ️ Please ensure Object Cache Pro plugin files are in the plugins/object-cache-pro/ directory"
+            return 1
+        fi
     fi
     
     if [ ! -f "$OCP_MAIN_FILE" ]; then
@@ -118,7 +134,7 @@ main() {
         echo "ℹ️ Object Cache Pro not available, skipping activation"
         echo "📝 To enable Object Cache Pro:"
         echo "   1. Download plugin from https://objectcache.pro/"
-        echo "   2. Upload files to wp-content/plugins/object-cache-pro/"
+        echo "   2. Extract and place files in the plugins/object-cache-pro/ directory"
         echo "   3. Redeploy container"
         return 0
     }

@@ -35,14 +35,16 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 # Copy custom scripts to be run by the official entrypoint
 COPY fix-permissions.sh /docker-entrypoint-initwp.d/
 COPY scripts/setup-object-cache-pro.sh /docker-entrypoint-initwp.d/
+COPY scripts/copy-object-cache-pro.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh \
-    && chmod +x /docker-entrypoint-initwp.d/setup-object-cache-pro.sh
+    && chmod +x /docker-entrypoint-initwp.d/setup-object-cache-pro.sh \
+    && chmod +x /docker-entrypoint-initwp.d/copy-object-cache-pro.sh
 
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/
 
-# Copy Object Cache Pro plugin if it exists (manually uploaded)
-COPY wp-content/ /var/www/html/wp-content/
+# Copy Object Cache Pro plugin from local plugins folder
+COPY plugins/object-cache-pro/ /var/www/html/wp-content/plugins/object-cache-pro/
 
 # Copy the custom wp-config.php file
 COPY wp-config-docker.php /var/www/html/wp-config.php

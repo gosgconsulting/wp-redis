@@ -79,5 +79,12 @@ services:
     restart: always
     image: redis:latest
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --no-autoupdate run --token eyJhIjoiODQxZDJlMDEzOTI2M2MyYmJjMzcxNTNhOWM2MmJhM2IiLCJ0IjoiZDQ0ZTBkNjgtZTExYy00OWYzLWEyOTQtNzRjNTY0ZWZlNjI4IiwicyI6Ik16QmhNREpoTldRdFlUbGxZeTAwWmpKbExUazJNRFF0TmpBNU5qbGhZV0l4Tm1SaCJ9
+    depends_on:
+      - wp
+
 volumes:
   db_data:

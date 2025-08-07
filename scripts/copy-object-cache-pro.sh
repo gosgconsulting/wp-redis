@@ -9,7 +9,7 @@ echo "🚀 Starting Object Cache Pro local installation..."
 
 # Configuration
 PLUGINS_DIR="/var/www/html/wp-content/plugins"
-LOCAL_PLUGINS_DIR="/var/www/plugins"
+LOCAL_PLUGINS_DIR="/var/www/html/plugins"
 OCP_DIR="${PLUGINS_DIR}/object-cache-pro"
 LOCAL_OCP_DIR="${LOCAL_PLUGINS_DIR}/object-cache-pro"
 
@@ -19,9 +19,12 @@ copy_from_local() {
     
     # Check if the local plugin directory exists
     if [ ! -d "$LOCAL_OCP_DIR" ]; then
-        echo "❌ Object Cache Pro not found in local plugins folder: $LOCAL_OCP_DIR"
-        echo "ℹ️ Please ensure the plugin is in the correct location"
-        return 1
+        echo "⚠️ Object Cache Pro not found in local plugins folder: $LOCAL_OCP_DIR"
+        echo "ℹ️ Creating empty directory structure..."
+        mkdir -p "$OCP_DIR"
+        touch "$OCP_DIR/README.md"
+        echo "# Object Cache Pro - Please add plugin files here" > "$OCP_DIR/README.md"
+        return 0
     fi
     
     # Create plugins directory if it doesn't exist

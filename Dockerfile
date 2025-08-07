@@ -43,8 +43,8 @@ RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh \
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/
 
-# Copy Object Cache Pro plugin from local plugins folder
-COPY plugins/object-cache-pro/ /var/www/html/wp-content/plugins/object-cache-pro/
+# Create directory for Object Cache Pro plugin
+RUN mkdir -p /var/www/html/wp-content/plugins/object-cache-pro/
 
 # Copy the custom wp-config.php file
 COPY wp-config-docker.php /var/www/html/wp-config.php

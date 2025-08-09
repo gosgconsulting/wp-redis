@@ -37,10 +37,12 @@ COPY fix-permissions.sh /docker-entrypoint-initwp.d/
 COPY scripts/setup-object-cache-pro.sh /docker-entrypoint-initwp.d/
 COPY scripts/copy-object-cache-pro.sh /docker-entrypoint-initwp.d/
 COPY scripts/opcache-from-env.sh /docker-entrypoint-initwp.d/
+COPY scripts/apache-mpm-from-env.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh \
     && chmod +x /docker-entrypoint-initwp.d/setup-object-cache-pro.sh \
     && chmod +x /docker-entrypoint-initwp.d/copy-object-cache-pro.sh \
-    && chmod +x /docker-entrypoint-initwp.d/opcache-from-env.sh
+    && chmod +x /docker-entrypoint-initwp.d/opcache-from-env.sh \
+    && chmod +x /docker-entrypoint-initwp.d/apache-mpm-from-env.sh
 
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/

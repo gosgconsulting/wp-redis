@@ -1,6 +1,6 @@
-FROM wordpress:latest
+FROM wordpress:php8.2-fpm
 
-# Install system dependencies for Redis and WordPress
+# Install system dependencies for Redis, PHP-FPM, and Nginx
 RUN apt-get update && apt-get install -y \
     sudo \
     libpng-dev \
@@ -8,13 +8,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     liblz4-dev \
+    nginx \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache's rewrite module, required for WordPress permalinks and .htaccess files
-RUN a2enmod rewrite
-
-# Copy custom Apache config to enable .htaccess overrides
-COPY config/apache-custom.conf /etc/apache2/conf-enabled/apache-custom.conf
+# Copy Nginx configuration
+COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx-default.conf /etc/nginx/conf.d/default.conf
 
 # Install PHP extensions in the correct order for Object Cache Pro
 # 1. Install igbinary first (required by Redis)
@@ -37,12 +36,12 @@ COPY fix-permissions.sh /docker-entrypoint-initwp.d/
 COPY scripts/setup-object-cache-pro.sh /docker-entrypoint-initwp.d/
 COPY scripts/copy-object-cache-pro.sh /docker-entrypoint-initwp.d/
 COPY scripts/opcache-from-env.sh /docker-entrypoint-initwp.d/
-COPY scripts/apache-mpm-from-env.sh /docker-entrypoint-initwp.d/
+COPY scripts/fpm-from-env.sh /docker-entrypoint-initwp.d/
 RUN chmod +x /docker-entrypoint-initwp.d/fix-permissions.sh \
     && chmod +x /docker-entrypoint-initwp.d/setup-object-cache-pro.sh \
     && chmod +x /docker-entrypoint-initwp.d/copy-object-cache-pro.sh \
     && chmod +x /docker-entrypoint-initwp.d/opcache-from-env.sh \
-    && chmod +x /docker-entrypoint-initwp.d/apache-mpm-from-env.sh
+    && chmod +x /docker-entrypoint-initwp.d/fpm-from-env.sh
 
 # Copy the file manager
 COPY wp-app/filemanager.php /var/www/html/
@@ -58,8 +57,10 @@ COPY config/php.conf.ini /usr/local/etc/php/conf.d/uploads.ini
 
 # Re-apply WordPress permissions. This is a build-time step.
 # The fix-permissions.sh script will handle runtime permissions.
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html \
+    && mkdir -p /run/php \
+    && mkdir -p /var/log/nginx
 
-# Expose port 80 and start php-fpm
+# Expose port 80 and start php-fpm + nginx
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php-fpm -F & exec nginx -g 'daemon off;' "]
